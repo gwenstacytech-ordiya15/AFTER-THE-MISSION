@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AFTER THE MISSION | Interactive NASA Digital Museum</title>
+  <style>
+    :root {
+      --bg-deep: #070b19;
+      --bg-card: #10172e;
+      --bg-card-hover: #172242;
+      --accent-gold: #fbbf24;
+      --accent-cyan: #38bdf8;
+      --accent-pink: #f472b6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-glow: rgba(56, 189, 248, 0.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px),
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px);
+      background-size: 550px 550px, 350px 350px;
+      background-position: 0 0, 40px 60px;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(7, 11, 25, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-glow);
+      padding: 0.75rem 5%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent-cyan); }
+
+    .xp-hud {
+      background: #131c38;
+      border: 1px solid var(--accent-gold);
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .xp-bar-wrap {
+      width: 90px;
+      height: 8px;
+      background: #1e293b;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-gold));
+      transition: width 0.4s ease;
+    }
+
+    .container {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 3rem 5%;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid var(--accent-cyan);
+      padding: 0.25rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #fff, var(--accent-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 2.5rem;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 850px) {
+      .hero-grid { grid-template-columns: 1fr; }
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.75rem;
+    }
+
+    .btn {
+      padding: 0.8rem 1.4rem;
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      font-size: 0.95rem;
+      transition: transform 0.15s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--accent-gold);
+      color: #070b19;
+      box-shadow: 0 4px 20px rgba(251, 191, 36, 0.35);
+    }
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--accent-cyan);
+    }
+
+    .diorama-box {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--accent-pink);
+      box-shadow: 0 0 30px rgba(244, 114, 182, 0.25);
+      background: #0d1326;
+      aspect-ratio: 16 / 10;
+    }
+
+    .diorama-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hotspot {
+      position: absolute;
+      background: rgba(7, 11, 25, 0.88);
+      border: 2px solid var(--accent-gold);
+      color: #fff;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .hotspot:hover {
+      background: var(--accent-gold);
+      color: #070b19;
+      transform: scale(1.08);
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.6); }
+      70% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+    }
+
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .filter-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid #1e293b;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--accent-cyan);
+      color: #070b19;
+      border-color: var(--accent-cyan);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-cyan);
+      background: var(--bg-card-hover);
+    }
+
+    .card.scanned { border-color: #22c55e; }
+
+    .status-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--accent-gold);
+    }
+
+    .scanned-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #22c55e;
+      color: #052e16;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      display: none;
+    }
+
+    .card.scanned .scanned-badge { display: inline-block; }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 6, 15, 0.85);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      z-index: 2000;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+      background: #0f172a;
+      border: 2px solid var(--accent-cyan);
+      border-radius: 18px;
+      max-width: 620px;
+      width: 100%;
+      padding: 2rem;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.6rem;
+      cursor: pointer;
+    }
+
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      background: #070b19;
+      padding: 1rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      border: 1px solid #1e293b;
+      font-size: 0.85rem;
+    }
+
+    .telemetry-item span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .quiz-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-gold);
+      border-radius: 18px;
+      padding: 2rem;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #090e21;
+      border: 1px solid #263354;
+      color: var(--text-main);
+      padding: 0.9rem 1.2rem;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .quiz-option:hover { border-color: var(--accent-cyan); background: #131d3d; }
+    .quiz-option.correct { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; }
+    .quiz-option.wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; }
+
+    .certificate {
+      display: none;
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      border: 3px double var(--accent-gold);
+      border-radius: 14px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .cert-name-input {
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--accent-cyan);
+background: #070b19;
+color: #fff;
+font-size: 1rem;
+margin: 0.75rem 0;
+text-align: center;
+}
+.diy-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 1.25rem;
+margin-top: 1.5rem;
+}
+.diy-step {
+background: var(--bg-card);
+border: 1px solid #1e293b;
+border-radius: 14px;
+overflow: hidden;
+}
+.diy-step img {
+width: 100%;
+height: 170px;
+object-fit: cover;
+background: #0b1124;
+border-bottom: 1px solid #1e293b;
+}
+.diy-step-body { padding: 1.1rem; }
+.lighting-compare {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 1rem;
+margin-top: 1.5rem;
+}
+@media (max-width: 650px) {
+.lighting-compare { grid-template-columns: 1fr; }
+}
+.light-card {
+background: rgba(56, 189, 248, 0.08);
+border: 1px solid var(--accent-cyan);
+border-radius: 12px;
+padding: 1.2rem;
+}
+.gallery-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 1.5rem;
+margin-top: 1.5rem;
+}
+.gallery-card {
+background: var(--bg-card);
+border: 1px solid var(--accent-pink);
+border-radius: 14px;
+overflow: hidden;
+}
+.gallery-card img {
+width: 100%;
+height: 200px;
+object-fit: cover;
+background: #0b1124;
+}
+.gallery-info { padding: 1.1rem; }
+footer {
+border-top: 1px solid #1e293b;
+text-align: center;
+padding: 2.5rem 5%;
+color: var(--text-muted);
+font-size: 0.88rem;
+margin-top: 3rem;
+}
+@media print {
+body * { visibility: hidden; }
+#certPrintArea, #certPrintArea * { visibility: visible; }
+#certPrintArea {
+position: fixed;
+inset: 0;
+background: #0f172a !important;
+color: #fff !important;
+-webkit-print-color-adjust: exact;
+}
+}
+
+
+🚀 AFTER THE MISSION
+
+Exhibit Hall
+Explorer Quiz
+DIY Shoebox Guide
+Student Gallery
+
+
+Cadet
+
+0 / 250 XP
+
+NASA Space Apps · Abandoned But Not Forgotten
+Where Do NASA Spacecraft Go When Their Mission Ends?
+
+When robotic explorers run out of power or complete their discoveries, they don't fly home. Explore our interactive digital museum—and click the glowing pins on our 3D physical shoebox diorama—to uncover the science left behind on the Moon, Mars, and deep space.
+
+
+🔭 Start Exploring (+XP)
+📦 Build the 3D Model
+
+🌕 1. Moon: Apollo 11
+🔴 2. Mars: Opportunity
+🪐 3. Saturn: Cassini
+✨ 4. Deep Space: Voyager 1
+
+
+👆 Click any glowing pin on our 3D shoebox prototype to inspect that spacecraft's NASA dossier!
+
+
+
+Interactive Exhibit Hall
+Scan Spacecraft to Earn Mission XP
+Click any spacecraft below to inspect its final resting coordinates, major scientific discoveries, and why NASA left its hardware behind (+25 XP each).
+All Worlds (6)
+🌕 The Moon
+🔴 Mars
+🪐 Gas Giants
+✨ Deep Space
+Junior Archivist Challenge
+Test Your Space Detective Skills (+100 XP)
+Answer all 4 mission clues to unlock your official printable Junior NASA Space Archivist Certificate!
+OFFICIAL CLASSROOM AWARD
+Junior NASA Space Archivist
+This certifies that
+
+
+has successfully explored NASA's retired robotic explorers on the Moon, Mars, Saturn, and Interstellar Space—proving these missions are Abandoned, But Never Forgotten.
+
+AFTER THE MISSION · Interactive Digital Museum
+🖨️ Print / Save Certificate (PDF)
+
+Hands-On Classroom Activity
+Build Your Own 3D Shoebox Space Museum
+Teachers & students: recreate our exact 4-zone physical model in 60 minutes using a recycled shoebox, bubble wrap, and metallic paper!
+Prep · Things Needed
+Gather Recycled Supplies
+Grab a shoebox, bubble wrap, a foam cube, metallic gold/silver/black paper, markers, tape, and scissors.
+
+Step 1 · 15 Mins
+Box & Bubble Skylight
+Line the inside walls with black paper, dot neon stars, and tape clear bubble wrap over a cutout window on the roof.
+
+Step 2 · 20 Mins
+Shape 3D Worlds
+Create gray bubble-wrap Moon craters (left), orange Mars terrain (right), and a gold-wrapped foam Saturn (top-left).
+
+Step 3 · 20 Mins
+Probes, Paths & Labels
+Fold miniature Apollo 11, Opportunity, Cassini, and Voyager 1 probes from foil paper, suspend them, and glue bold zone labels.
+
+Final Result · Lights On!
+Illuminated Space Museum
+Turn off the room lights and shine light through the top skylight to bring all 4 NASA zones to life!
+
+
+💡 Lighting Option A: Quick Classroom Mode
+Place a phone flashlight or small desk lamp face-down over the bubble-wrap skylight for instant, bright studio-style illumination.
+
+
+⚡ Lighting Option B: STEM Circuit Upgrade
+Wire a 2.5V battery box, switch, and mini bulb holder over the skylight to combine space exploration with hands-on electrical engineering!
+
+Community Hall of Fame
+Young Explorers Showcase Gallery
+Built your own space museum model in class or at home? Send us a photo of your creation—we feature the best student builds right here!
+
+📸 Submit Your Student Model
+
+Featured Founding Prototype
+4-Zone Illuminated Space Diorama
+Built by Grade 9 Founding Team · Recycled Shoebox, Bubble Wrap & Metallic Foil
+
+🛸
+Your Classroom Model Here!
+Follow our DIY Shoebox Guide above and submit your photo to get featured with your name and school.
+Upload Entry →
+
+
+AFTER THE MISSION · Built for the NASA Space Apps Challenge (Abandoned but Not Forgotten)
+Mission Telemetry & Scientific Archives: NASA Science, NASA Jet Propulsion Laboratory (JPL), and Apollo Lunar Surface Journal.
+×
+Status
+Mission Name
+Final Location-
+Mission Duration-
+Final Signal / End-
+Key Metric-
+🔬 What It Achieved:
+🛰️ Why Its Equipment Stayed Behind:
+
+
+const missions = [
+{
+id: 'apollo',
+zone: 'moon',
+status: '🌕 Resting on the Moon',
+title: 'Apollo 11 Lunar Module "Eagle"',
+subtitle: 'First Crewed Moon Landing Hardware',
+location: 'Sea of Tranquility (0.674° N, 23.473° E)',
+duration: '21 hours, 36 mins on lunar surface',
+end: 'July 21, 1969',
+metric: '21.5 kg of Moon rocks returned',
+achieved: 'Landed the first humans on the Moon, deployed solar wind collectors, a laser ranging retroreflector (still used today!), and a passive seismometer.',
+why: 'To save fuel and weight for the trip back to Earth, astronauts left the heavy lower descent stage on the Moon as a launchpad for the upper ascent cabin.'
+},
+{
+id: 'rover',
+zone: 'moon',
+status: '🌕 Parked on the Moon',
+title: 'Apollo Lunar Roving Vehicle (LRV)',
+subtitle: 'Electric Moon Buggy (Apollos 15, 16 & 17)',
+location: 'Hadley Rille, Descartes & Taurus-Littrow',
+duration: '3 days per mission',
+end: 'December 14, 1972',
+metric: '35.9 km driven (Apollo 17 record)',
+achieved: 'Allowed astronauts to travel miles away from their lander to explore volcanic vents, deep craters, and ancient lunar highlands.',
+why: 'There was zero cargo room inside the tiny Apollo capsule to bring a 210 kg electric car back to Earth—so all three rovers remain parked on the Moon.'
+},
+{
+id: 'opportunity',
+zone: 'mars',
+status: '🔴 Resting on Mars',
+title: 'Opportunity Rover (MER-B)',
+subtitle: 'The 90-Day Rover That Lasted Nearly 15 Years',
+location: 'Perseverance Valley, Meridiani Planum (1.95° S, 354.47° E)',
+duration: '14 years, 138 days (5,111 Sols)',
+end: 'June 10, 2018',
+metric: '45.16 km driven (Off-world marathon record)',
+achieved: 'Discovered mineral "blueberries" (hematite) and ancient clay rocks proving liquid water once flowed across the surface of Mars.',
+why: 'Launching a rocket off Mars requires massive fuel infrastructure that did not exist. A planet-wide dust storm in 2018 covered its solar panels, ending its power.'
+},
+{
+id: 'insight',
+zone: 'mars',
+status: '🔴 Resting on Mars',
+title: 'NASA InSight Mars Lander',
+subtitle: 'First Robotic Geologist to Listen to "Marsquakes"',
+location: 'Elysium Planitia (4.502° N, 135.623° E)',
+duration: '4 years, 19 days (1,440 Sols)',
+end: 'December 15, 2022',
+metric: '1,319+ Marsquakes detected',
+achieved: 'Used an ultra-sensitive seismometer to map Mars’s crust, mantle, and liquid iron core for the very first time.',
+why: 'As a stationary lander without wheels or windshield wipers, thick Martian dust slowly coated its solar arrays until its batteries could no longer recharge.'
+},
+{
+id: 'cassini',
+zone: 'saturn',
+status: '🪐 Vaporized in Saturn (Planetary Protection)',
+title: 'Cassini-Huygens Spacecraft',
+subtitle: '13 Years Exploring Saturn, Its Rings & Moons',
+location: 'Saturn Upper Atmosphere (9.4° N)',
+duration: '19 years, 335 days total flight',
+end: 'September 15, 2017 ("Grand Finale")',
+metric: '453,048 images taken',
+achieved: 'Revealed geysers of water erupting from icy moon Enceladus and liquid methane lakes on Titan—two top places to search for alien life.',
+why: 'When Cassini ran low on fuel, NASA intentionally crashed it into Saturn so it would never accidentally collide with and contaminate potentially habitable moons Enceladus or Titan!'
+},
+{
+id: 'voyager',
+zone: 'deepspace',
+status: '✨ Drifting in Interstellar Space',
+title: 'Voyager 1 Spacecraft',
+subtitle: 'Humanity’s Farthest Object From Earth',
+location: 'Interstellar Space (>24 Billion km from Earth)',
+duration: '49+ years and counting!',
+end: 'Instruments powering down ~2025–2030',
+metric: 'Traveling at ~61,000 km/h (17 km/s)',
+achieved: 'Captured the first close-ups of Jupiter and Saturn, snapped the famous "Pale Blue Dot" photo, and became the first spacecraft to cross into interstellar space.',
+why: 'Voyager 1 is moving far too fast to ever turn around. Even after its nuclear battery fades, it will drift silently through the Milky Way forever carrying the Golden Record.'
+}
+];
+const quizQuestions = [
+{
+q: "1. Which spacecraft did NASA intentionally crash into Saturn so it wouldn't contaminate icy moons that might harbor life?",
+options: ["Voyager 1", "Cassini-Huygens", "Apollo 11 Eagle", "InSight Lander"],
+answer: 1
+},
+{
+q: "2. Why did the Opportunity rover stop communicating after nearly 15 years on Mars?",
+options: ["It drove into a volcano", "Astronauts brought it back to Earth", "A massive dust storm blocked its solar panels", "It flew onward to Jupiter"],
+answer: 2
+},
+{
+q: "3. Which NASA spacecraft carries a Golden Record and is drifting forever in interstellar space over 24 billion km away?",
+options: ["Voyager 1", "Lunar Roving Vehicle", "InSight Lander", "Cassini"],
+answer: 0
+},
+{
+q: "4. Why was the lower descent stage of Apollo 11's Eagle left behind on the Moon?",
+options: ["It broke upon landing", "It served as a launchpad so the upper cabin could save fuel returning to Earth", "NASA forgot to bring it", "It turned into a rover"],
+answer: 1
+}
+];
+let scannedSet = new Set();
+let quizCompleted = false;
+let currentQ = 0;
+let score = 0;
+let currentFilter = 'all';
+function updateXP() {
+const xp = (scannedSet.size * 25) + (quizCompleted ? 100 : 0);
+const pct = Math.min(100, Math.round((xp / 250) * 100));
+document.getElementById('xpFill').style.width = pct + '%';
+document.getElementById('xpText').textContent = ${xp} / 250 XP;
+let rank = 'Cadet';
+if (xp >= 250) rank = 'Master Archivist 🏆';
+else if (xp >= 150) rank = 'Mission Specialist';
+else if (xp >= 50) rank = 'Junior Explorer';
+document.getElementById('rankLabel').textContent = rank;
+}
+function renderCards(filter = currentFilter) {
+const grid = document.getElementById('cardsGrid');
+grid.innerHTML = '';
+missions
+.filter(m => filter === 'all' || m.zone === filter)
+.forEach(m => {
+const isScanned = scannedSet.has(m.id);
+const card = document.createElement('div');
+card.className = card ${isScanned ? 'scanned' : ''};
+card.innerHTML = <div> <span class="scanned-badge">✓ +25 XP</span> <span class="status-tag">${m.status}</span> <h3>${m.title}</h3> <p>${m.subtitle}</p> </div> <button class="btn btn-secondary" style="width:100%; justify-content:center;" onclick="openMission('${m.id}')"> 🔍 Inspect Mission Dossier </button>;
+grid.appendChild(card);
+});
+}
+function filterCards(zone, btn) {
+currentFilter = zone;
+document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+renderCards(zone);
+}
+function openMission(id) {
+const m = missions.find(item => item.id === id);
+if (!m) return;
+scannedSet.add(id);
+updateXP();
+renderCards(currentFilter);
+document.getElementById('mStatus').textContent = m.status;
+document.getElementById('mTitle').textContent = m.title;
+document.getElementById('mSubtitle').textContent = m.subtitle;
+document.getElementById('mLocation').textContent = m.location;
+document.getElementById('mDuration').textContent = m.duration;
+document.getElementById('mEnd').textContent = m.end;
+document.getElementById('mMetric').textContent = m.metric;
+document.getElementById('mAchieved').textContent = m.achieved;
+document.getElementById('mWhy').textContent = m.why;
+document.getElementById('missionModal').classList.add('open');
+}
+function closeModal() {
+document.getElementById('missionModal').classList.remove('open');
+}
+function renderQuiz() {
+const box = document.getElementById('quizContainer');
+if (currentQ >= quizQuestions.length) {
+quizCompleted = true;
+updateXP();
+box.innerHTML = <div style="text-align:center;"> <h3 style="color:var(--accent-gold); font-size:1.5rem;">🎉 Mission Complete! Score: ${score} / ${quizQuestions.length}</h3> <p style="color:var(--text-muted); margin-top:0.4rem;">You earned +100 XP! Enter your name below to print or save your Junior Space Archivist Certificate.</p> <button class="btn btn-secondary" style="margin-top:0.8rem;" onclick="resetQuiz()">Play Again</button> </div>;
+document.getElementById('certPrintArea').style.display = 'block';
+return;
+}
+const item = quizQuestions[currentQ];
+box.innerHTML = <p style="color:var(--accent-cyan); font-weight:700; font-size:0.85rem; margin-bottom:0.5rem;">Question ${currentQ + 1} of ${quizQuestions.length}</p> <h3 style="margin-bottom:1.1rem;">${item.q}</h3> ${item.options.map((opt, idx) =>
+${opt}
+).join('')} ;
+}
+function handleAnswer(idx, btn) {
+const correctIdx = quizQuestions[currentQ].answer;
+const buttons = document.querySelectorAll('.quiz-option');
+buttons.forEach(b => b.disabled = true);
+if (idx === correctIdx) {
+btn.classList.add('correct');
+score++;
+} else {
+btn.classList.add('wrong');
+buttons[correctIdx].classList.add('correct');
+}
+setTimeout(() => {
+currentQ++;
+renderQuiz();
+}, 900);
+}
+function resetQuiz() {
+currentQ = 0;
+score = 0;
+document.getElementById('certPrintArea').style.display = 'none';
+renderQuiz();
+}
+renderCards();
+renderQuiz();
+</html>
