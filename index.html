@@ -1,811 +1,672 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AFTER THE MISSION | Interactive NASA Digital Museum</title>
-  <style>
-    :root {
-      --bg-deep: #070b19;
-      --bg-card: #10172e;
-      --bg-card-hover: #172242;
-      --accent-gold: #fbbf24;
-      --accent-cyan: #38bdf8;
-      --accent-pink: #f472b6;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-glow: rgba(56, 189, 248, 0.25);
+```html
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" id="museum">
+      <div class="section-head">
+        <div class="eyebrow">The spacecraft archive</div>
+        <h2>Explore the mission map</h2>
+        <p>Select a marker or open an exhibit to discover what happened to each spacecraft, what it achieved, and why it remains where it is.</p>
+      </div>
+      <div class="museum-layout">
+        <div class="model-panel">
+          <h3>Across the Solar System</h3>
+          <p class="hint">A stylised map—not to scale. Select a marker to open a mission dossier.</p>
+          <div class="model-stage" aria-label="Stylised map of the Moon, Mars and Saturn">
+            <div class="world moon"></div><div class="world mars"></div><div class="world saturn"></div>
+            <button class="pin p1" data-open="apollo11" aria-label="Open Apollo 11 dossier">Apollo 11</button>
+            <button class="pin p2" data-open="opportunity" aria-label="Open Opportunity dossier">Opportunity</button>
+            <button class="pin p3" data-open="cassini" aria-label="Open Cassini dossier">Cassini</button>
+            <button class="pin p4" data-open="insight" aria-label="Open InSight dossier">InSight</button>
+          </div>
+          <p class="hint">The Lunar Roving Vehicles are also on the Moon. Voyager 1 is far beyond the planets, in interstellar space.</p>
+        </div>
+        <div class="info-panel">
+          <h3>What happens after a mission?</h3>
+          <p>Spacecraft don't all end their journeys in the same way. Their final state depends on their destination, design, fuel, power and scientific goals.</p>
+          <div class="timeline">
+            <div class="time-step"><b>01 · Remain</b><span>Hardware stays on a surface after its work is complete.</span></div>
+            <div class="time-step"><b>02 · Retire</b><span>A spacecraft stops operating when power or systems run out.</span></div>
+            <div class="time-step"><b>03 · Dispose</b><span>A spacecraft may be deliberately directed into a planet or other safe destination.</span></div>
+            <div class="time-step"><b>04 · Continue</b><span>A spacecraft may keep travelling after its main mission ends.</span></div>
+          </div>
+          <div class="callout"><strong>Important distinction:</strong> “Still travelling” is not the same as “abandoned.” Voyager 1 is still on its journey, while other spacecraft have ended operations.</div>
+        </div>
+      </div>
+
+      <div class="filter-row" aria-label="Filter exhibits">
+        <button class="filter" data-filter="all" aria-pressed="true">All missions</button>
+        <button class="filter" data-filter="moon" aria-pressed="false">🌕 Moon</button>
+        <button class="filter" data-filter="mars" aria-pressed="false">🔴 Mars</button>
+        <button class="filter" data-filter="saturn" aria-pressed="false">🪐 Saturn</button>
+        <button class="filter" data-filter="deep" aria-pressed="false">✨ Deep space</button>
+      </div>
+      <div class="cards" id="missionCards" aria-live="polite"></div>
+    </section>
+
+    <section class="wrap" id="timeline">
+      <div class="section-head">
+        <div class="eyebrow">The bigger picture</div>
+        <h2>A mission has a lifecycle</h2>
+        <p>From launch to its final chapter, every spacecraft follows a journey shaped by engineering decisions and scientific discoveries.</p>
+      </div>
+      <div class="guide-grid">
+        <article class="guide-card"><div class="step-number">01</div><h3>Launch</h3><p>A rocket carries the spacecraft away from Earth and places it on its planned trajectory.</p></article>
+        <article class="guide-card"><div class="step-number">02</div><h3>Explore</h3><p>Instruments collect images, measurements and other data that help scientists answer questions.</p></article>
+        <article class="guide-card"><div class="step-number">03</div><h3>Reach a limit</h3><p>Fuel, power, hardware, communications or mission goals can limit how long a spacecraft operates.</p></article>
+        <article class="guide-card"><div class="step-number">04</div><h3>Leave a legacy</h3><p>Even after operations end, discoveries and engineering lessons continue to shape future missions.</p></article>
+      </div>
+    </section>
+
+    <section class="wrap" id="quiz">
+      <div class="section-head">
+        <div class="eyebrow">Test your knowledge</div>
+        <h2>Mission archivist challenge</h2>
+        <p>Five questions. See how much you remember from the spacecraft dossiers.</p>
+      </div>
+      <div class="quiz-panel">
+        <div class="quiz-meta"><span id="questionCount">Question 1 of 5</span><span id="quizScore">Score: 0</span></div>
+        <div class="quiz-progress"><span id="quizBar"></span></div>
+        <div id="quizArea">
+          <h3 id="questionText"></h3>
+          <div class="options" id="options"></div>
+          <p class="feedback" id="feedback" aria-live="polite"></p>
+          <button class="btn primary" id="nextQuestion" disabled>Next question →</button>
+        </div>
+        <div id="quizResult" hidden>
+          <h3>Archive complete!</h3>
+          <p id="resultText"></p>
+          <button class="btn secondary" id="restartQuiz">Try again</button>
+        </div>
+        <div class="certificate" id="certificate">
+          <h3>MISSION ARCHIVIST</h3>
+          <p>This certificate is awarded to</p>
+          <p><input id="studentName" placeholder="Enter your name" aria-label="Name for certificate"></p>
+          <p>for completing the AFTER THE MISSION knowledge challenge.</p>
+          <strong id="certificateScore">Quiz score: 0/5</strong>
+          <p>NASA Space Apps · Abandoned but Not Forgotten</p>
+        </div>
+        <button class="btn secondary" id="printCertificate" style="margin-top:1rem">Print certificate</button>
+      </div>
+    </section>
+
+    <section class="wrap" id="build">
+      <div class="section-head">
+        <div class="eyebrow">From screen to shoebox</div>
+        <h2>Build the mission model</h2>
+        <p>Turn the website's story into a physical display. Divide a shoebox into three zones and show how spacecraft missions leave different kinds of legacies.</p>
+      </div>
+      <div class="guide-grid">
+        <article class="guide-card"><div class="step-number">01 · THE MOON</div><h3>Surface hardware</h3><p>Make a grey lunar landscape with craters. Add a small Apollo Lunar Module descent stage and a Lunar Roving Vehicle. Label the equipment that remains on the Moon.</p></article>
+        <article class="guide-card"><div class="step-number">02 · MARS</div><h3>Silent explorers</h3><p>Use red-orange terrain, rocks and a rover. Include Opportunity and InSight, explaining how dust and power limitations contributed to the end of their operations.</p></article>
+        <article class="guide-card"><div class="step-number">03 · DEEP SPACE</div><h3>Still travelling</h3><p>Create a dark star field with Saturn and a tiny spacecraft. Show Cassini's planned end at Saturn, then Voyager 1 continuing beyond the planets.</p></article>
+      </div>
+      <div class="split" style="margin-top:1rem">
+        <div class="guide-card">
+          <h3>Make the display tell a story</h3>
+          <ul>
+            <li>Give each zone a clear title and colour palette.</li>
+            <li>Add a small information card for every mission.</li>
+            <li>Use arrows to show where a spacecraft went or what happened to it.</li>
+            <li>Include a QR code linking to the website, if available.</li>
+            <li>Keep labels short enough to read at a glance.</li>
+          </ul>
+        </div>
+        <div class="guide-card">
+          <h3>Materials checklist</h3>
+          <ul>
+            <li>Shoebox and cardboard dividers</li>
+            <li>Paint, paper, glue and scissors</li>
+            <li>Modelling clay or recycled materials</li>
+            <li>Printed labels and mission facts</li>
+            <li>Small lights or reflective paper (optional)</li>
+          </ul>
+          <p class="notice">Keep the model safe and lightweight. Ask an adult for help with any cutting tools or hot glue.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" id="gallery">
+      <div class="section-head">
+        <div class="eyebrow">The team's field notes</div>
+        <h2>Model gallery</h2>
+        <p>Preview photos of your physical model here while you prepare your presentation.</p>
+      </div>
+      <div class="gallery-box">
+        <label for="photoInput"><strong>Select model photos to preview on this device</strong></label>
+        <input id="photoInput" type="file" accept="image/*" multiple style="display:block;margin-top:.8rem">
+        <p class="notice">Photos are only previewed in your browser. This page does not upload them to a server or save them for other visitors.</p>
+        <div class="gallery-preview" id="galleryPreview"></div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="source-panel">
+        <div class="eyebrow">Go deeper</div>
+        <h2>Explore the original mission records</h2>
+        <p>Use these official NASA pages to verify facts, find images and learn more about the spacecraft featured in this museum.</p>
+        <div class="source-links">
+          <a href="https://science.nasa.gov/mission/apollo-11/" target="_blank" rel="noopener">Apollo 11</a>
+          <a href="https://www.nasa.gov/mission/apollo-15/" target="_blank" rel="noopener">Apollo 15</a>
+          <a href="https://science.nasa.gov/mission/mars-exploration-rovers/" target="_blank" rel="noopener">Mars Exploration Rovers</a>
+          <a href="https://science.nasa.gov/mission/insight/" target="_blank" rel="noopener">InSight</a>
+          <a href="https://science.nasa.gov/mission/cassini/" target="_blank" rel="noopener">Cassini</a>
+          <a href="https://science.nasa.gov/mission/voyager/" target="_blank" rel="noopener">Voyager</a>
+        </div>
+        <p class="notice">Always check the latest official mission updates before presenting changing details such as spacecraft distance or instrument status.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>AFTER THE MISSION</strong> · A student-created interactive space museum</p>
+    <p>Created for NASA Space Apps Challenge · Abandoned but Not Forgotten</p>
+    <p class="notice">Educational project. NASA is not affiliated with or endorsing this student website.</p>
+  </footer>
+
+  <div class="modal" id="missionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <div class="modal-top">
+        <div><span class="tag" id="modalStatus"></span><h2 id="modalTitle"></h2><p class="hint" id="modalSubtitle"></p></div>
+        <button class="close" id="closeModal" aria-label="Close mission dossier">✕</button>
+      </div>
+      <div class="detail-grid">
+        <div class="detail"><small>Location</small><strong id="modalLocation"></strong></div>
+        <div class="detail"><small>Mission dates</small><strong id="modalDuration"></strong></div>
+        <div class="detail"><small>Final chapter</small><strong id="modalEnd"></strong></div>
+        <div class="detail"><small>Key measurement</small><strong id="modalMetric"></strong></div>
+      </div>
+      <h3>What did it achieve?</h3><p id="modalAchievement"></p>
+      <h3>What happened afterwards?</h3><p id="modalEnding"></p>
+      <div class="callout" id="modalCaveat"></div>
+      <div class="source-links"><a id="modalSource" href="#" target="_blank" rel="noopener">Read the NASA mission page ↗</a></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+          </div>
+      </div>
+    </section>
+
+    <section class="wrap" id="museum">
+      <div class="section-head">
+        <div class="eyebrow">THE ARCHIVE</div>
+        <h2>Six stories. One solar system.</h2>
+        <p>Explore the hardware, the science it made possible, and what happened when its mission reached its final chapter.</p>
+      </div>
+      <div class="museum-layout">
+        <div class="model-panel">
+          <h3>Mission map</h3>
+          <p class="hint">A simplified, not-to-scale map. Select a marker to open its dossier.</p>
+          <div class="model-stage">
+            <div class="world moon"></div><div class="world mars"></div><div class="world saturn"></div>
+            <button class="pin p1" data-open="apollo">Apollo 11</button>
+            <button class="pin p2" data-open="opportunity">Opportunity</button>
+            <button class="pin p3" data-open="cassini">Cassini</button>
+            <button class="pin p4" data-open="insight">InSight</button>
+          </div>
+          <p class="hint">The Lunar Roving Vehicles are also on the Moon. Voyager 1 is far beyond the planets, in interstellar space.</p>
+        </div>
+        <div class="info-panel">
+          <h3>Not every mission ends the same way</h3>
+          <p>Some spacecraft remain on the surface where they worked. Others stop communicating, are deliberately disposed of, or continue travelling long after their primary mission.</p>
+          <div class="callout"><strong>Remember:</strong> Voyager 1 is still travelling. It is not a spacecraft that has been abandoned or parked.</div>
+          <p>Use the filters below to explore each destination.</p>
+        </div>
+      </div>
+      <div class="filter-row">
+        <button class="filter" data-filter="all" aria-pressed="true">All missions</button>
+        <button class="filter" data-filter="moon" aria-pressed="false">🌕 Moon</button>
+        <button class="filter" data-filter="mars" aria-pressed="false">🔴 Mars</button>
+        <button class="filter" data-filter="saturn" aria-pressed="false">🪐 Saturn</button>
+        <button class="filter" data-filter="deep" aria-pressed="false">✨ Deep space</button>
+      </div>
+      <div class="cards" id="missionCards" aria-live="polite"></div>
+    </section>
+
+    <section class="wrap" id="timeline">
+      <div class="section-head">
+        <div class="eyebrow">THE BIGGER PICTURE</div>
+        <h2>A mission's final chapter</h2>
+        <p>Spacecraft can leave very different legacies. Their endings are shaped by engineering, science and the environment they explore.</p>
+      </div>
+      <div class="timeline">
+        <div class="time-step"><b>01 · Remain</b><span>Hardware stays on a surface after its work is complete.</span></div>
+        <div class="time-step"><b>02 · Retire</b><span>A spacecraft stops operating when power or systems run out.</span></div>
+        <div class="time-step"><b>03 · Dispose</b><span>A spacecraft is deliberately sent to a planned destination.</span></div>
+        <div class="time-step"><b>04 · Continue</b><span>A spacecraft keeps travelling beyond its original mission.</span></div>
+      </div>
+    </section>
+
+    <section class="wrap" id="quiz">
+      <div class="section-head">
+        <div class="eyebrow">TEST YOUR KNOWLEDGE</div>
+        <h2>Mission archivist challenge</h2>
+        <p>Five questions to see what you've learned from the archive.</p>
+      </div>
+      <div class="quiz-panel">
+        <div class="quiz-meta"><span id="questionCount">Question 1 of 5</span><span id="quizScore">Score: 0</span></div>
+        <div class="quiz-progress"><span id="quizBar"></span></div>
+        <div id="quizArea">
+          <h3 id="questionText"></h3>
+          <div class="options" id="options"></div>
+          <p class="feedback" id="feedback" aria-live="polite"></p>
+          <button class="btn primary" id="nextQuestion" disabled>Next question →</button>
+        </div>
+        <div id="quizResult" hidden>
+          <h3>Archive complete!</h3>
+          <p id="resultText"></p>
+          <button class="btn secondary" id="restartQuiz">Try again</button>
+        </div>
+        <div class="certificate" id="certificate">
+          <h3>MISSION ARCHIVIST</h3>
+          <p>This certificate is awarded to</p>
+          <p><input id="studentName" placeholder="Enter your name" aria-label="Name for certificate"></p>
+          <p>for completing the AFTER THE MISSION knowledge challenge.</p>
+          <strong id="certificateScore">Quiz score: 0/5</strong>
+          <p>NASA Space Apps · Abandoned but Not Forgotten</p>
+        </div>
+        <button class="btn secondary" id="printCertificate" style="margin-top:1rem">Print certificate</button>
+      </div>
+    </section>
+
+    <section class="wrap" id="build">
+      <div class="section-head">
+        <div class="eyebrow">FROM SCREEN TO SHOEBOX</div>
+        <h2>Build the mission model</h2>
+        <p>Turn the website's story into a physical display. Divide a shoebox into three zones and show how spacecraft missions leave different kinds of legacies.</p>
+      </div>
+      <div class="guide-grid">
+        <article class="guide-card"><div class="step-number">01 · THE MOON</div><h3>Surface hardware</h3><p>Make a grey lunar landscape with craters. Add a small Apollo Lunar Module descent stage and a Lunar Roving Vehicle. Label the equipment that remains on the Moon.</p></article>
+        <article class="guide-card"><div class="step-number">02 · MARS</div><h3>Silent explorers</h3><p>Use red-orange terrain, rocks and a rover. Include Opportunity and InSight, explaining how dust and power limitations contributed to the end of their operations.</p></article>
+        <article class="guide-card"><div class="step-number">03 · DEEP SPACE</div><h3>Still travelling</h3><p>Create a dark star field with Saturn and a tiny spacecraft. Show Cassini's planned end at Saturn, then Voyager 1 continuing beyond the planets.</p></article>
+      </div>
+      <div class="split" style="margin-top:1rem">
+        <div class="guide-card">
+          <h3>Make the display tell a story</h3>
+          <ul>
+            <li>Give each zone a clear title and colour palette.</li>
+            <li>Add a small information card for every mission.</li>
+            <li>Use arrows to show where a spacecraft went or what happened to it.</li>
+            <li>Include a QR code linking to the website, if available.</li>
+            <li>Keep labels short enough to read at a glance.</li>
+          </ul>
+        </div>
+        <div class="guide-card">
+          <h3>Materials checklist</h3>
+          <ul>
+            <li>Shoebox and cardboard dividers</li>
+            <li>Paint, paper, glue and scissors</li>
+            <li>Modelling clay or recycled materials</li>
+            <li>Printed labels and mission facts</li>
+            <li>Small lights or reflective paper (optional)</li>
+          </ul>
+          <p class="notice">Keep the model safe and lightweight. Ask an adult for help with any cutting tools or hot glue.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" id="gallery">
+      <div class="section-head">
+        <div class="eyebrow">THE TEAM'S FIELD NOTES</div>
+        <h2>Model gallery</h2>
+        <p>Preview photos of your physical model here while you prepare your presentation.</p>
+      </div>
+      <div class="gallery-box">
+        <label for="photoInput"><strong>Select model photos to preview on this device</strong></label>
+        <input id="photoInput" type="file" accept="image/*" multiple style="display:block;margin-top:.8rem">
+        <p class="notice">Photos are only previewed in your browser. This page does not upload them to a server or save them for other visitors.</p>
+        <div class="gallery-preview" id="galleryPreview"></div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="source-panel">
+        <div class="eyebrow">GO DEEPER</div>
+        <h2>Explore the original mission records</h2>
+        <p>Use these official NASA pages to verify facts, find images and learn more about the spacecraft featured in this museum.</p>
+        <div class="source-links">
+          <a href="https://science.nasa.gov/mission/apollo-11/" target="_blank" rel="noopener">Apollo 11</a>
+          <a href="https://www.nasa.gov/mission/apollo-15/" target="_blank" rel="noopener">Apollo 15</a>
+          <a href="https://science.nasa.gov/mission/mars-exploration-rovers/" target="_blank" rel="noopener">Mars Exploration Rovers</a>
+          <a href="https://science.nasa.gov/mission/insight/" target="_blank" rel="noopener">InSight</a>
+          <a href="https://science.nasa.gov/mission/cassini/" target="_blank" rel="noopener">Cassini</a>
+          <a href="https://science.nasa.gov/mission/voyager/" target="_blank" rel="noopener">Voyager</a>
+        </div>
+        <p class="notice">Always check the latest official mission updates before presenting changing details such as spacecraft distance or instrument status.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>AFTER THE MISSION</strong> · A student-created interactive space museum</p>
+    <p>Created for NASA Space Apps Challenge · Abandoned but Not Forgotten</p>
+    <p class="notice">Educational project. NASA is not affiliated with or endorsing this student website.</p>
+  </footer>
+
+  <div class="modal" id="missionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <div class="modal-top">
+        <div>
+          <span class="tag" id="modalStatus"></span>
+          <h2 id="modalTitle"></h2>
+          <p class="hint" id="modalSubtitle"></p>
+        </div>
+        <button class="close" id="closeModal" aria-label="Close mission dossier">✕</button>
+      </div>
+      <div class="detail-grid">
+        <div class="detail"><small>Location</small><strong id="modalLocation"></strong></div>
+        <div class="detail"><small>Mission dates</small><strong id="modalDuration"></strong></div>
+        <div class="detail"><small>Mission ending</small><strong id="modalEnd"></strong></div>
+        <div class="detail"><small>Key fact</small><strong id="modalMetric"></strong></div>
+      </div>
+      <h3>🔬 What it achieved</h3><p id="modalAchievement"></p>
+      <h3>🛰️ What happened to the hardware?</h3><p id="modalEnding"></p>
+      <div class="callout" id="modalCaveat"></div>
+      <div class="source-links"><a id="modalSource" href="#" target="_blank" rel="noopener">Open official NASA mission page ↗</a></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    "use strict";
+
+    // Mission facts are written conservatively. Update time-sensitive facts with a dated NASA source.
+        const missions = [
+      {
+        id:"apollo", zone:"moon", icon:"🌕", status:"Hardware left on the Moon",
+        title:'Apollo 11 Lunar Module "Eagle"', subtitle:"The first crewed lunar landing",
+        location:"Sea of Tranquility, Moon", duration:"About 21 hours 36 minutes on the lunar surface",
+        end:"July 21, 1969 (ascent from the Moon)",
+        metric:"About 21.6 kg of lunar samples returned",
+        achievement:"Apollo 11 landed the first humans on the Moon. The astronauts collected lunar samples and deployed experiments, including a laser-ranging retroreflector and a passive seismometer.",
+        ending:"The Lunar Module's ascent stage carried the astronauts back to orbit and later was jettisoned. The descent stage remained on the lunar surface and served as the landing platform. It was not designed to return to Earth.",
+        caveat:"The descent stage and the scientific instruments are different pieces of hardware. Avoid implying that the entire Eagle spacecraft remains intact on the surface.",
+        source:"https://science.nasa.gov/mission/apollo-11/"
+      },
+      {
+        id:"rover", zone:"moon", icon:"🚙", status:"Rovers remain on the Moon",
+        title:"Apollo Lunar Roving Vehicle", subtitle:"The electric Moon buggy",
+        location:"Apollo 15, 16 and 17 landing sites", duration:"Used during three Apollo missions in 1971–1972",
+        end:"Last driven during Apollo 17 in December 1972",
+        metric:"About 35.7 km driven by Apollo 17's rover",
+        achievement:"The Lunar Roving Vehicle let astronauts travel farther from their landing sites, carry equipment and collect more lunar samples.",
+        ending:"The rovers were left on the Moon because they were not designed to return. Their batteries and systems were intended for short surface operations, not a return journey.",
+        caveat:"The three rovers were used on Apollo 15, 16 and 17. Check the exact distance against the relevant mission source before displaying a record figure.",
+        source:"https://solarsystem.nasa.gov/missions/lunar-roving-vehicle/in-depth/"
+      },
+      {
+        id:"opportunity", zone:"mars", icon:"🔴", status:"Mission ended after loss of contact",
+        title:"Opportunity Rover (MER-B)", subtitle:"A 90-sol mission that lasted over 14 years",
+        location:"Meridiani Planum / Perseverance Valley, Mars", duration:"14 years, 138 days",
+        end:"NASA ended the mission on February 13, 2019, after the final communication attempt",
+        metric:"45.16 km travelled",
+        achievement:"Opportunity found evidence that liquid water had interacted with rocks on ancient Mars. Its investigations included hematite-rich spherules and rocks shaped by past watery environments.",
+        ending:"A planet-encircling dust event in 2018 reduced sunlight reaching the rover's solar panels. The rover stopped communicating, and NASA eventually declared the mission complete after repeated attempts to contact it.",
+        caveat:"June 10, 2018 was the last successful communication, not the date NASA officially declared the mission over. Keep those dates distinct.",
+        source:"https://science.nasa.gov/mission/mer/"
+      },
+      {
+        id:"insight", zone:"mars", icon:"📡", status:"Mission ended; lander remains on Mars",
+        title:"NASA InSight Lander", subtitle:"A stationary geophysical station on Mars",
+        location:"Elysium Planitia, Mars", duration:"More than four Earth years of surface operations",
+        end:"NASA declared the mission ended in December 2022 after communication was lost",
+        metric:"Recorded hundreds of marsquakes",
+        achievement:"InSight used a seismometer to study marsquakes and learn about Mars's interior, including its crust, mantle and core.",
+        ending:"Dust gradually accumulated on the lander's solar panels, reducing the energy available to recharge its batteries. The lander could not drive to a clearer location, so it remained where it had landed.",
+        caveat:"Avoid using a precise marsquake total unless you cite a dated NASA data source; counts can differ depending on the catalogue and definition used.",
+        source:"https://science.nasa.gov/mission/insight/"
+      },
+      {
+        id:"cassini", zone:"saturn", icon:"🪐", status:"Deliberately disposed of at Saturn",
+        title:"Cassini-Huygens", subtitle:"A 13-year exploration of Saturn",
+        location:"Saturn system; final trajectory into Saturn's atmosphere", duration:"Nearly 20 years from launch to end",
+        end:"September 15, 2017",
+        metric:"More than 450,000 images returned",
+        achievement:"Cassini studied Saturn, its rings and moons. It revealed active water-rich plumes from Enceladus and lakes and seas of liquid hydrocarbons on Titan.",
+        ending:"NASA directed Cassini into Saturn's atmosphere when its fuel was nearly depleted. This protected potentially habitable moons from accidental contamination by the spacecraft.",
+        caveat:"Use “entered Saturn's atmosphere and was destroyed” rather than suggesting that it simply parked or landed on the planet.",
+        source:"https://science.nasa.gov/mission/cassini/"
+      },
+      {
+        id:"voyager", zone:"deep", icon:"✨", status:"Still travelling; some instruments operating",
+        title:"Voyager 1", subtitle:"The most distant human-made spacecraft",
+        location:"Interstellar space", duration:"Launched September 5, 1977; still in flight",
+        end:"No final mission-ending date: the spacecraft continues its journey",
+        metric:"More than 24 billion km from Earth (distance changes)",
+        achievement:"Voyager 1 explored Jupiter and Saturn, returned the famous Pale Blue Dot image and crossed the heliopause into interstellar space in 2012.",
+        ending:"Voyager 1 has not been abandoned or deliberately parked. Engineers are managing its declining electrical power by turning off instruments and systems over time. It continues travelling outward.",
+        caveat:"Distance and instrument status change. The distance shown here is an approximate scale reference, not a live measurement. Add an “as of” date and check NASA's current mission updates before judging or presenting.",
+        source:"https://science.nasa.gov/mission/voyager/"
+      }
+    ];
+
+    const questions = [
+      {q:"Why did NASA deliberately send Cassini into Saturn?", opts:["To land it on a ring","To protect potentially habitable moons from contamination","To send it back to Earth","To test a new parachute"], a:1, why:"Cassini was directed into Saturn at the end of its mission to reduce the chance of contaminating moons such as Enceladus or Titan."},
+      {q:"What most directly contributed to Opportunity's loss of communication in 2018?", opts:["A planet-wide dust event reduced sunlight reaching its solar panels","It ran out of wheels","It landed in Saturn","Its radio was removed"], a:0, why:"Dust in the Martian atmosphere reduced the sunlight reaching Opportunity's solar panels, leaving it without enough power."},
+      {q:"Which statement about Voyager 1 is most accurate?", opts:["It was parked on Mars","It was intentionally crashed into Jupiter","It is still travelling through interstellar space","It returned to Earth"], a:2, why:"Voyager 1 crossed into interstellar space and continues travelling outward. Its power is declining, so instruments are being switched off over time."},
+      {q:"Why did the Apollo Lunar Roving Vehicles remain on the Moon?", opts:["They were designed to be launched into orbit","They were not designed to return to Earth","They became satellites","They were lost during landing"], a:1, why:"The rovers were surface exploration vehicles. Returning them to Earth was not part of the mission design."},
+      {q:"What is one of InSight's most important scientific contributions?", opts:["Mapping the rings of Saturn","Studying Mars's interior using seismic measurements","Taking the first photo of Earth","Collecting samples from the Moon"], a:1, why:"InSight's seismometer recorded marsquakes, helping scientists investigate the structure of Mars's interior."}
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    let scanned = new Set();
+    let xp = 0;
+    let activeFilter = "all";
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+    let lastFocus = null;
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.style.display = "block";
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.style.display = "none", 2400);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg-deep);
-      color: var(--text-main);
-      line-height: 1.6;
-      background-image: 
-        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 4px),
-        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 3px);
-      background-size: 550px 550px, 350px 350px;
-      background-position: 0 0, 40px 60px;
+    function updateProgress() {
+      xp = scanned.size * 25 + (currentQuestion >= questions.length ? 100 : 0);
+      $("xp").textContent = xp;
+      $("rank").textContent = xp >= 250 ? "Master Archivist" : xp >= 150 ? "Mission Specialist" : xp >= 50 ? "Junior Explorer" : "Cadet";
     }
 
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: rgba(7, 11, 25, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-glow);
-      padding: 0.75rem 5%;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
+    function renderCards() {
+      const host = $("missionCards");
+      host.replaceChildren();
+      missions.filter(m => activeFilter === "all" || m.zone === activeFilter).forEach(m => {
+        const card = document.createElement("article");
+        card.className = "mission-card" + (scanned.has(m.id) ? " done" : "");
+
+        const icon = document.createElement("div");
+        icon.className = "mission-icon";
+        icon.textContent = m.icon;
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = m.status;
+
+        const title = document.createElement("h3");
+        title.textContent = m.title;
+
+        const subtitle = document.createElement("p");
+        subtitle.textContent = m.subtitle;
+
+        const btn = document.createElement("button");
+        btn.className = "btn secondary";
+        btn.textContent = scanned.has(m.id) ? "Revisit dossier ✓" : "Inspect mission dossier →";
+        btn.addEventListener("click", () => openMission(m.id, btn));
+
+        card.append(icon, tag, title, subtitle, btn);
+        host.append(card);
+      });
     }
 
-    .brand {
-      font-weight: 800;
-      font-size: 1.2rem;
-      letter-spacing: 1px;
-      color: var(--accent-gold);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    function openMission(id, trigger) {
+      const m = missions.find(item => item.id === id);
+      if (!m) return;
+
+      lastFocus = trigger || document.activeElement;
+      scanned.add(id);
+      updateProgress();
+      renderCards();
+
+      $("modalStatus").textContent = m.status;
+      $("modalTitle").textContent = m.title;
+      $("modalSubtitle").textContent = m.subtitle;
+      $("modalLocation").textContent = m.location;
+      $("modalDuration").textContent = m.duration;
+      $("modalEnd").textContent = m.end;
+      $("modalMetric").textContent = m.metric;
+      $("modalAchievement").textContent = m.achievement;
+      $("modalEnding").textContent = m.ending;
+      $("modalCaveat").textContent = "Research note: " + m.caveat;
+      $("modalSource").href = m.source;
+
+      $("missionModal").classList.add("open");
+      $("closeModal").focus();
     }
 
-    .nav-links {
-      display: flex;
-      gap: 1.25rem;
-      flex-wrap: wrap;
+    function closeModal() {
+      $("missionModal").classList.remove("open");
+      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
     }
 
-    .nav-links a {
-      color: var(--text-main);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: color 0.2s;
+    document.querySelectorAll("[data-open]").forEach(btn => {
+      btn.addEventListener("click", () => openMission(btn.dataset.open, btn));
+    });
+
+    $("closeModal").addEventListener("click", closeModal);
+
+    $("missionModal").addEventListener("click", e => {
+      if (e.target === $("missionModal")) closeModal();
+    });
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && $("missionModal").classList.contains("open")) closeModal();
+    });
+
+    document.querySelectorAll("[data-filter]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeFilter = btn.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach(b => {
+          b.setAttribute("aria-pressed", String(b === btn));
+        });
+        renderCards();
+      });
+    });
+
+    function renderQuestion() {
+      answered = false;
+      $("quizArea").hidden = false;
+      $("quizResult").hidden = true;
+
+      const q = questions[currentQuestion];
+      $("questionCount").textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+      $("quizScore").textContent = `Score: ${score}`;
+      $("quizBar").style.width = `${(currentQuestion / questions.length) * 100}%`;
+      $("questionText").textContent = q.q;
+      $("feedback").textContent = "";
+      $("nextQuestion").disabled = true;
+      $("nextQuestion").textContent = "Next question →";
+
+      const options = $("options");
+      options.replaceChildren();
+
+      q.opts.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = option;
+        btn.addEventListener("click", () => chooseAnswer(index));
+        options.append(btn);
+      });
     }
 
-    .nav-links a:hover { color: var(--accent-cyan); }
+    function chooseAnswer(index) {
+      if (answered) return;
+      answered = true;
 
-    .xp-hud {
-      background: #131c38;
-      border: 1px solid var(--accent-gold);
-      border-radius: 999px;
-      padding: 0.35rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.85rem;
-      font-weight: 700;
+      const q = questions[currentQuestion];
+      const buttons = [...$("options").querySelectorAll("button")];
+
+      buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.a) btn.classList.add("correct");
+        if (i === index && index !== q.a) btn.classList.add("incorrect");
+      });
+
+      if (index === q.a) {
+        score++;
+        $("feedback").textContent = "Correct! " + q.why;
+      } else {
+        $("feedback").textContent = "Not quite. " + q.why;
+      }
+
+      $("quizScore").textContent = `Score: ${score}`;
+      $("nextQuestion").disabled = false;
+      $("nextQuestion").textContent = currentQuestion === questions.length - 1 ? "See my result →" : "Next question →";
     }
 
-    .xp-bar-wrap {
-      width: 90px;
-      height: 8px;
-      background: #1e293b;
-      border-radius: 999px;
-      overflow: hidden;
+    $("nextQuestion").addEventListener("click", () => {
+      if (!answered) return;
+      currentQuestion++;
+      if (currentQuestion >= questions.length) finishQuiz();
+      else renderQuestion();
+    });
+
+    function finishQuiz() {
+      $("quizArea").hidden = true;
+      $("quizResult").hidden = false;
+      $("resultText").textContent = `You scored ${score} out of ${questions.length}. ${score === questions.length ? "Outstanding work, Archivist!" : "Great exploring—revisit the dossiers and have another go."}`;
+      $("certificateScore").textContent = `Quiz score: ${score}/${questions.length}`;
+      $("certificate").style.display = "block";
+      $("quizBar").style.width = "100%";
+      updateProgress();
     }
 
-    .xp-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-gold));
-      transition: width 0.4s ease;
+    function resetQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      $("certificate").style.display = "none";
+      updateProgress();
+      renderQuestion();
     }
 
-    .container {
-      max-width: 1150px;
-      margin: 0 auto;
-      padding: 3rem 5%;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-
-    .badge-pill {
-      display: inline-block;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent-cyan);
-      border: 1px solid var(--accent-cyan);
-      padding: 0.25rem 0.85rem;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 0.75rem;
-    }
-
-    h1 {
-      font-size: clamp(2rem, 4.5vw, 3.2rem);
-      line-height: 1.15;
-      margin-bottom: 1rem;
-      background: linear-gradient(90deg, #fff, var(--accent-gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    h2 {
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
-      margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      max-width: 720px;
-      margin: 0 auto;
-      font-size: 1.05rem;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      gap: 2.5rem;
-      align-items: center;
-      margin-top: 1rem;
-    }
-
-    @media (max-width: 850px) {
-      .hero-grid { grid-template-columns: 1fr; }
-    }
-
-    .cta-group {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 1.75rem;
-    }
-
-    .btn {
-      padding: 0.8rem 1.4rem;
-      border-radius: 10px;
-      font-weight: 700;
-      text-decoration: none;
-      cursor: pointer;
-      border: none;
-      font-size: 0.95rem;
-      transition: transform 0.15s, box-shadow 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary {
-      background: var(--accent-gold);
-      color: #070b19;
-      box-shadow: 0 4px 20px rgba(251, 191, 36, 0.35);
-    }
-    .btn-secondary {
-      background: var(--bg-card);
-      color: var(--text-main);
-      border: 1px solid var(--accent-cyan);
-    }
-
-    .diorama-box {
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 2px solid var(--accent-pink);
-      box-shadow: 0 0 30px rgba(244, 114, 182, 0.25);
-      background: #0d1326;
-      aspect-ratio: 16 / 10;
-    }
-
-    .diorama-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .hotspot {
-      position: absolute;
-      background: rgba(7, 11, 25, 0.88);
-      border: 2px solid var(--accent-gold);
-      color: #fff;
-      padding: 0.35rem 0.7rem;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      animation: pulse 2s infinite;
-      transition: transform 0.2s, background 0.2s;
-    }
-
-    .hotspot:hover {
-      background: var(--accent-gold);
-      color: #070b19;
-      transform: scale(1.08);
-    }
-
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.6); }
-      70% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
-    }
-
-    .filter-bar {
-      display: flex;
-      justify-content: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
-    }
-
-    .filter-btn {
-      background: var(--bg-card);
-      color: var(--text-muted);
-      border: 1px solid #1e293b;
-      padding: 0.5rem 1.1rem;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.88rem;
-    }
-
-    .filter-btn.active, .filter-btn:hover {
-      background: var(--accent-cyan);
-      color: #070b19;
-      border-color: var(--accent-cyan);
-    }
-
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid #1e293b;
-      border-radius: 16px;
-      padding: 1.5rem;
-      transition: transform 0.2s, border-color 0.2s;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: var(--accent-cyan);
-      background: var(--bg-card-hover);
-    }
-
-    .card.scanned { border-color: #22c55e; }
-
-    .status-tag {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 0.2rem 0.65rem;
-      border-radius: 6px;
-      margin-bottom: 0.75rem;
-      background: rgba(251, 191, 36, 0.15);
-      color: var(--accent-gold);
-    }
-
-    .scanned-badge {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: #22c55e;
-      color: #052e16;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      display: none;
-    }
-
-    .card.scanned .scanned-badge { display: inline-block; }
-
-    .card h3 {
-      font-size: 1.3rem;
-      margin-bottom: 0.4rem;
-    }
-
-    .card p {
-      color: var(--text-muted);
-      font-size: 0.92rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(3, 6, 15, 0.85);
-      backdrop-filter: blur(6px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem;
-      z-index: 2000;
-    }
-
-    .modal-backdrop.open { display: flex; }
-
-    .modal-box {
-      background: #0f172a;
-      border: 2px solid var(--accent-cyan);
-      border-radius: 18px;
-      max-width: 620px;
-      width: 100%;
-      padding: 2rem;
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .close-modal {
-      position: absolute;
-      top: 1rem;
-      right: 1.2rem;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.6rem;
-      cursor: pointer;
-    }
-
-    .telemetry-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      background: #070b19;
-      padding: 1rem;
-      border-radius: 12px;
-      margin: 1rem 0;
-      border: 1px solid #1e293b;
-      font-size: 0.85rem;
-    }
-
-    .telemetry-item span {
-      display: block;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-    }
-
-    .quiz-panel {
-      background: var(--bg-card);
-      border: 1px solid var(--accent-gold);
-      border-radius: 18px;
-      padding: 2rem;
-      max-width: 780px;
-      margin: 0 auto;
-    }
-
-    .quiz-option {
-      display: block;
-      width: 100%;
-      text-align: left;
-      background: #090e21;
-      border: 1px solid #263354;
-      color: var(--text-main);
-      padding: 0.9rem 1.2rem;
-      border-radius: 10px;
-      margin-bottom: 0.75rem;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 600;
-      transition: all 0.15s;
-    }
-
-    .quiz-option:hover { border-color: var(--accent-cyan); background: #131d3d; }
-    .quiz-option.correct { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; }
-    .quiz-option.wrong { background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; }
-
-    .certificate {
-      display: none;
-      margin-top: 1.5rem;
-      background: linear-gradient(135deg, #0f172a, #1e1b4b);
-      border: 3px double var(--accent-gold);
-      border-radius: 14px;
-      padding: 2rem;
-      text-align: center;
-    }
-
-    .cert-name-input {
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
-      border: 1px solid var(--accent-cyan);
-background: #070b19;
-color: #fff;
-font-size: 1rem;
-margin: 0.75rem 0;
-text-align: center;
-}
-.diy-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-gap: 1.25rem;
-margin-top: 1.5rem;
-}
-.diy-step {
-background: var(--bg-card);
-border: 1px solid #1e293b;
-border-radius: 14px;
-overflow: hidden;
-}
-.diy-step img {
-width: 100%;
-height: 170px;
-object-fit: cover;
-background: #0b1124;
-border-bottom: 1px solid #1e293b;
-}
-.diy-step-body { padding: 1.1rem; }
-.lighting-compare {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 1rem;
-margin-top: 1.5rem;
-}
-@media (max-width: 650px) {
-.lighting-compare { grid-template-columns: 1fr; }
-}
-.light-card {
-background: rgba(56, 189, 248, 0.08);
-border: 1px solid var(--accent-cyan);
-border-radius: 12px;
-padding: 1.2rem;
-}
-.gallery-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-gap: 1.5rem;
-margin-top: 1.5rem;
-}
-.gallery-card {
-background: var(--bg-card);
-border: 1px solid var(--accent-pink);
-border-radius: 14px;
-overflow: hidden;
-}
-.gallery-card img {
-width: 100%;
-height: 200px;
-object-fit: cover;
-background: #0b1124;
-}
-.gallery-info { padding: 1.1rem; }
-footer {
-border-top: 1px solid #1e293b;
-text-align: center;
-padding: 2.5rem 5%;
-color: var(--text-muted);
-font-size: 0.88rem;
-margin-top: 3rem;
-}
-@media print {
-body * { visibility: hidden; }
-#certPrintArea, #certPrintArea * { visibility: visible; }
-#certPrintArea {
-position: fixed;
-inset: 0;
-background: #0f172a !important;
-color: #fff !important;
--webkit-print-color-adjust: exact;
-}
-}
-
-
-🚀 AFTER THE MISSION
-
-Exhibit Hall
-Explorer Quiz
-DIY Shoebox Guide
-Student Gallery
-
-
-Cadet
-
-0 / 250 XP
-
-NASA Space Apps · Abandoned But Not Forgotten
-Where Do NASA Spacecraft Go When Their Mission Ends?
-
-When robotic explorers run out of power or complete their discoveries, they don't fly home. Explore our interactive digital museum—and click the glowing pins on our 3D physical shoebox diorama—to uncover the science left behind on the Moon, Mars, and deep space.
-
-
-🔭 Start Exploring (+XP)
-📦 Build the 3D Model
-
-🌕 1. Moon: Apollo 11
-🔴 2. Mars: Opportunity
-🪐 3. Saturn: Cassini
-✨ 4. Deep Space: Voyager 1
-
-
-👆 Click any glowing pin on our 3D shoebox prototype to inspect that spacecraft's NASA dossier!
-
-
-
-Interactive Exhibit Hall
-Scan Spacecraft to Earn Mission XP
-Click any spacecraft below to inspect its final resting coordinates, major scientific discoveries, and why NASA left its hardware behind (+25 XP each).
-All Worlds (6)
-🌕 The Moon
-🔴 Mars
-🪐 Gas Giants
-✨ Deep Space
-Junior Archivist Challenge
-Test Your Space Detective Skills (+100 XP)
-Answer all 4 mission clues to unlock your official printable Junior NASA Space Archivist Certificate!
-OFFICIAL CLASSROOM AWARD
-Junior NASA Space Archivist
-This certifies that
-
-
-has successfully explored NASA's retired robotic explorers on the Moon, Mars, Saturn, and Interstellar Space—proving these missions are Abandoned, But Never Forgotten.
-
-AFTER THE MISSION · Interactive Digital Museum
-🖨️ Print / Save Certificate (PDF)
-
-Hands-On Classroom Activity
-Build Your Own 3D Shoebox Space Museum
-Teachers & students: recreate our exact 4-zone physical model in 60 minutes using a recycled shoebox, bubble wrap, and metallic paper!
-Prep · Things Needed
-Gather Recycled Supplies
-Grab a shoebox, bubble wrap, a foam cube, metallic gold/silver/black paper, markers, tape, and scissors.
-
-Step 1 · 15 Mins
-Box & Bubble Skylight
-Line the inside walls with black paper, dot neon stars, and tape clear bubble wrap over a cutout window on the roof.
-
-Step 2 · 20 Mins
-Shape 3D Worlds
-Create gray bubble-wrap Moon craters (left), orange Mars terrain (right), and a gold-wrapped foam Saturn (top-left).
-
-Step 3 · 20 Mins
-Probes, Paths & Labels
-Fold miniature Apollo 11, Opportunity, Cassini, and Voyager 1 probes from foil paper, suspend them, and glue bold zone labels.
-
-Final Result · Lights On!
-Illuminated Space Museum
-Turn off the room lights and shine light through the top skylight to bring all 4 NASA zones to life!
-
-
-💡 Lighting Option A: Quick Classroom Mode
-Place a phone flashlight or small desk lamp face-down over the bubble-wrap skylight for instant, bright studio-style illumination.
-
-
-⚡ Lighting Option B: STEM Circuit Upgrade
-Wire a 2.5V battery box, switch, and mini bulb holder over the skylight to combine space exploration with hands-on electrical engineering!
-
-Community Hall of Fame
-Young Explorers Showcase Gallery
-Built your own space museum model in class or at home? Send us a photo of your creation—we feature the best student builds right here!
-
-📸 Submit Your Student Model
-
-Featured Founding Prototype
-4-Zone Illuminated Space Diorama
-Built by Grade 9 Founding Team · Recycled Shoebox, Bubble Wrap & Metallic Foil
-
-🛸
-Your Classroom Model Here!
-Follow our DIY Shoebox Guide above and submit your photo to get featured with your name and school.
-Upload Entry →
-
-
-AFTER THE MISSION · Built for the NASA Space Apps Challenge (Abandoned but Not Forgotten)
-Mission Telemetry & Scientific Archives: NASA Science, NASA Jet Propulsion Laboratory (JPL), and Apollo Lunar Surface Journal.
-×
-Status
-Mission Name
-Final Location-
-Mission Duration-
-Final Signal / End-
-Key Metric-
-🔬 What It Achieved:
-🛰️ Why Its Equipment Stayed Behind:
-
-
-const missions = [
-{
-id: 'apollo',
-zone: 'moon',
-status: '🌕 Resting on the Moon',
-title: 'Apollo 11 Lunar Module "Eagle"',
-subtitle: 'First Crewed Moon Landing Hardware',
-location: 'Sea of Tranquility (0.674° N, 23.473° E)',
-duration: '21 hours, 36 mins on lunar surface',
-end: 'July 21, 1969',
-metric: '21.5 kg of Moon rocks returned',
-achieved: 'Landed the first humans on the Moon, deployed solar wind collectors, a laser ranging retroreflector (still used today!), and a passive seismometer.',
-why: 'To save fuel and weight for the trip back to Earth, astronauts left the heavy lower descent stage on the Moon as a launchpad for the upper ascent cabin.'
-},
-{
-id: 'rover',
-zone: 'moon',
-status: '🌕 Parked on the Moon',
-title: 'Apollo Lunar Roving Vehicle (LRV)',
-subtitle: 'Electric Moon Buggy (Apollos 15, 16 & 17)',
-location: 'Hadley Rille, Descartes & Taurus-Littrow',
-duration: '3 days per mission',
-end: 'December 14, 1972',
-metric: '35.9 km driven (Apollo 17 record)',
-achieved: 'Allowed astronauts to travel miles away from their lander to explore volcanic vents, deep craters, and ancient lunar highlands.',
-why: 'There was zero cargo room inside the tiny Apollo capsule to bring a 210 kg electric car back to Earth—so all three rovers remain parked on the Moon.'
-},
-{
-id: 'opportunity',
-zone: 'mars',
-status: '🔴 Resting on Mars',
-title: 'Opportunity Rover (MER-B)',
-subtitle: 'The 90-Day Rover That Lasted Nearly 15 Years',
-location: 'Perseverance Valley, Meridiani Planum (1.95° S, 354.47° E)',
-duration: '14 years, 138 days (5,111 Sols)',
-end: 'June 10, 2018',
-metric: '45.16 km driven (Off-world marathon record)',
-achieved: 'Discovered mineral "blueberries" (hematite) and ancient clay rocks proving liquid water once flowed across the surface of Mars.',
-why: 'Launching a rocket off Mars requires massive fuel infrastructure that did not exist. A planet-wide dust storm in 2018 covered its solar panels, ending its power.'
-},
-{
-id: 'insight',
-zone: 'mars',
-status: '🔴 Resting on Mars',
-title: 'NASA InSight Mars Lander',
-subtitle: 'First Robotic Geologist to Listen to "Marsquakes"',
-location: 'Elysium Planitia (4.502° N, 135.623° E)',
-duration: '4 years, 19 days (1,440 Sols)',
-end: 'December 15, 2022',
-metric: '1,319+ Marsquakes detected',
-achieved: 'Used an ultra-sensitive seismometer to map Mars’s crust, mantle, and liquid iron core for the very first time.',
-why: 'As a stationary lander without wheels or windshield wipers, thick Martian dust slowly coated its solar arrays until its batteries could no longer recharge.'
-},
-{
-id: 'cassini',
-zone: 'saturn',
-status: '🪐 Vaporized in Saturn (Planetary Protection)',
-title: 'Cassini-Huygens Spacecraft',
-subtitle: '13 Years Exploring Saturn, Its Rings & Moons',
-location: 'Saturn Upper Atmosphere (9.4° N)',
-duration: '19 years, 335 days total flight',
-end: 'September 15, 2017 ("Grand Finale")',
-metric: '453,048 images taken',
-achieved: 'Revealed geysers of water erupting from icy moon Enceladus and liquid methane lakes on Titan—two top places to search for alien life.',
-why: 'When Cassini ran low on fuel, NASA intentionally crashed it into Saturn so it would never accidentally collide with and contaminate potentially habitable moons Enceladus or Titan!'
-},
-{
-id: 'voyager',
-zone: 'deepspace',
-status: '✨ Drifting in Interstellar Space',
-title: 'Voyager 1 Spacecraft',
-subtitle: 'Humanity’s Farthest Object From Earth',
-location: 'Interstellar Space (>24 Billion km from Earth)',
-duration: '49+ years and counting!',
-end: 'Instruments powering down ~2025–2030',
-metric: 'Traveling at ~61,000 km/h (17 km/s)',
-achieved: 'Captured the first close-ups of Jupiter and Saturn, snapped the famous "Pale Blue Dot" photo, and became the first spacecraft to cross into interstellar space.',
-why: 'Voyager 1 is moving far too fast to ever turn around. Even after its nuclear battery fades, it will drift silently through the Milky Way forever carrying the Golden Record.'
-}
-];
-const quizQuestions = [
-{
-q: "1. Which spacecraft did NASA intentionally crash into Saturn so it wouldn't contaminate icy moons that might harbor life?",
-options: ["Voyager 1", "Cassini-Huygens", "Apollo 11 Eagle", "InSight Lander"],
-answer: 1
-},
-{
-q: "2. Why did the Opportunity rover stop communicating after nearly 15 years on Mars?",
-options: ["It drove into a volcano", "Astronauts brought it back to Earth", "A massive dust storm blocked its solar panels", "It flew onward to Jupiter"],
-answer: 2
-},
-{
-q: "3. Which NASA spacecraft carries a Golden Record and is drifting forever in interstellar space over 24 billion km away?",
-options: ["Voyager 1", "Lunar Roving Vehicle", "InSight Lander", "Cassini"],
-answer: 0
-},
-{
-q: "4. Why was the lower descent stage of Apollo 11's Eagle left behind on the Moon?",
-options: ["It broke upon landing", "It served as a launchpad so the upper cabin could save fuel returning to Earth", "NASA forgot to bring it", "It turned into a rover"],
-answer: 1
-}
-];
-let scannedSet = new Set();
-let quizCompleted = false;
-let currentQ = 0;
-let score = 0;
-let currentFilter = 'all';
-function updateXP() {
-const xp = (scannedSet.size * 25) + (quizCompleted ? 100 : 0);
-const pct = Math.min(100, Math.round((xp / 250) * 100));
-document.getElementById('xpFill').style.width = pct + '%';
-document.getElementById('xpText').textContent = ${xp} / 250 XP;
-let rank = 'Cadet';
-if (xp >= 250) rank = 'Master Archivist 🏆';
-else if (xp >= 150) rank = 'Mission Specialist';
-else if (xp >= 50) rank = 'Junior Explorer';
-document.getElementById('rankLabel').textContent = rank;
-}
-function renderCards(filter = currentFilter) {
-const grid = document.getElementById('cardsGrid');
-grid.innerHTML = '';
-missions
-.filter(m => filter === 'all' || m.zone === filter)
-.forEach(m => {
-const isScanned = scannedSet.has(m.id);
-const card = document.createElement('div');
-card.className = card ${isScanned ? 'scanned' : ''};
-card.innerHTML = <div> <span class="scanned-badge">✓ +25 XP</span> <span class="status-tag">${m.status}</span> <h3>${m.title}</h3> <p>${m.subtitle}</p> </div> <button class="btn btn-secondary" style="width:100%; justify-content:center;" onclick="openMission('${m.id}')"> 🔍 Inspect Mission Dossier </button>;
-grid.appendChild(card);
-});
-}
-function filterCards(zone, btn) {
-currentFilter = zone;
-document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-btn.classList.add('active');
-renderCards(zone);
-}
-function openMission(id) {
-const m = missions.find(item => item.id === id);
-if (!m) return;
-scannedSet.add(id);
-updateXP();
-renderCards(currentFilter);
-document.getElementById('mStatus').textContent = m.status;
-document.getElementById('mTitle').textContent = m.title;
-document.getElementById('mSubtitle').textContent = m.subtitle;
-document.getElementById('mLocation').textContent = m.location;
-document.getElementById('mDuration').textContent = m.duration;
-document.getElementById('mEnd').textContent = m.end;
-document.getElementById('mMetric').textContent = m.metric;
-document.getElementById('mAchieved').textContent = m.achieved;
-document.getElementById('mWhy').textContent = m.why;
-document.getElementById('missionModal').classList.add('open');
-}
-function closeModal() {
-document.getElementById('missionModal').classList.remove('open');
-}
-function renderQuiz() {
-const box = document.getElementById('quizContainer');
-if (currentQ >= quizQuestions.length) {
-quizCompleted = true;
-updateXP();
-box.innerHTML = <div style="text-align:center;"> <h3 style="color:var(--accent-gold); font-size:1.5rem;">🎉 Mission Complete! Score: ${score} / ${quizQuestions.length}</h3> <p style="color:var(--text-muted); margin-top:0.4rem;">You earned +100 XP! Enter your name below to print or save your Junior Space Archivist Certificate.</p> <button class="btn btn-secondary" style="margin-top:0.8rem;" onclick="resetQuiz()">Play Again</button> </div>;
-document.getElementById('certPrintArea').style.display = 'block';
-return;
-}
-const item = quizQuestions[currentQ];
-box.innerHTML = <p style="color:var(--accent-cyan); font-weight:700; font-size:0.85rem; margin-bottom:0.5rem;">Question ${currentQ + 1} of ${quizQuestions.length}</p> <h3 style="margin-bottom:1.1rem;">${item.q}</h3> ${item.options.map((opt, idx) =>
-${opt}
-).join('')} ;
-}
-function handleAnswer(idx, btn) {
-const correctIdx = quizQuestions[currentQ].answer;
-const buttons = document.querySelectorAll('.quiz-option');
-buttons.forEach(b => b.disabled = true);
-if (idx === correctIdx) {
-btn.classList.add('correct');
-score++;
-} else {
-btn.classList.add('wrong');
-buttons[correctIdx].classList.add('correct');
-}
-setTimeout(() => {
-currentQ++;
-renderQuiz();
-}, 900);
-}
-function resetQuiz() {
-currentQ = 0;
-score = 0;
-document.getElementById('certPrintArea').style.display = 'none';
-renderQuiz();
-}
-renderCards();
-renderQuiz();
+    $("restartQuiz").addEventListener("click", resetQuiz);
+
+    $("printCertificate").addEventListener("click", () => {
+      const name = $("studentName").value.trim();
+      if (!name) {
+        $("studentName").focus();
+        showToast("Add a name to your certificate first.");
+        return;
+      }
+      window.print();
+    });
+
+    $("photoInput").addEventListener("change", event => {
+      const files = [...event.target.files].filter(file => file.type.startsWith("image/"));
+      const preview = $("galleryPreview");
+      preview.replaceChildren();
+
+      files.slice(0, 6).forEach(file => {
+        const img = document.createElement("img");
+        const url = URL.createObjectURL(file);
+        img.src = url;
+        img.alt = "Preview of the team's shoebox model";
+        img.onload = () => URL.revokeObjectURL(url);
+        preview.append(img);
+      });
+
+      if (files.length > 6) showToast("Showing the first six selected images.");
+    });
+
+    renderCards();
+    renderQuestion();
+    updateProgress();
+  </script>
+</body>
 </html>
